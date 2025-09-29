@@ -1,6 +1,81 @@
 # 파이썬 모듈과 패키지
 
-## 1. 모듈 (Module) 기본
+## 1. 파이썬 패키지 구조 이해
+
+### 자바 vs 파이썬 패키지 구조 비교
+
+#### 자바 패키지 구조
+```
+my-java-project/
+├── src/
+│   └── main/
+│       └── java/
+│           └── com/
+│               └── example/
+│                   └── myproject/
+│                       ├── Main.java
+│                       ├── model/
+│                       │   └── User.java
+│                       └── service/
+│                           └── UserService.java
+├── pom.xml
+└── README.md
+```
+
+#### 파이썬 패키지 구조
+```
+my-python-project/
+├── src/
+│   └── myproject/
+│       ├── __init__.py      ← 자바에는 없음!
+│       ├── main.py
+│       ├── models/
+│       │   ├── __init__.py  ← 자바에는 없음!
+│       │   └── user.py
+│       └── services/
+│           ├── __init__.py  ← 자바에는 없음!
+│           └── user_service.py
+├── tests/
+├── requirements.txt         ← pom.xml과 비슷
+└── setup.py
+```
+
+### 핵심 차이점
+
+| 구분 | 자바 | 파이썬 |
+|------|------|--------|
+| **패키지 정의** | 폴더만 있으면 됨 | `__init__.py` 파일 필요 |
+| **의존성 관리** | `pom.xml` | `requirements.txt` |
+| **실행 파일** | `Main.java` | `main.py` |
+| **네이밍 규칙** | `UserService.java` | `user_service.py` |
+| **가상환경** | Maven/Gradle | venv, virtualenv |
+
+### 가상환경 vs 프로젝트 패키지 구조
+
+#### 가상환경 (`my_python_env/`)
+```
+my_python_env/
+├── bin/           # 실행 파일들 (python, pip, activate 등)
+├── include/       # C 확장 모듈을 위한 헤더 파일들
+├── lib/           # 설치된 파이썬 패키지들이 저장되는 곳
+└── pyvenv.cfg     # 가상환경 설정 정보 파일
+```
+
+#### 프로젝트 패키지 구조
+```
+my-python-app/
+├── src/
+│   └── myapp/
+│       ├── __init__.py
+│       ├── main.py
+│       ├── models/
+│       └── services/
+├── tests/
+├── requirements.txt
+└── README.md
+```
+
+## 2. 모듈 (Module) 기본
 
 ### 모듈이란?
 모듈은 파이썬 코드를 담고 있는 파일입니다. 자바의 클래스 파일이나 JavaScript의 모듈과 유사합니다.
@@ -606,7 +681,286 @@ from .utils import math_utils
 from ..parent_package import something
 ```
 
-## 8. 다음 학습 단계
+## 8. 파이썬 프로젝트 아키텍처 패턴
+
+### 계층형 아키텍처 (Layered Architecture)
+
+파이썬에서 가장 기본적이고 널리 사용되는 아키텍처 패턴입니다.
+
+```
+myapp/
+├── models/     ← 데이터 계층 (Data Layer)
+├── services/   ← 비즈니스 계층 (Business Layer)  
+├── utils/      ← 유틸리티 계층 (Utility Layer)
+└── main.py     ← 프레젠테이션 계층 (Presentation Layer)
+```
+
+### 자바 vs 파이썬 아키텍처 비교
+
+| 계층 | 자바 | 파이썬 |
+|------|------|--------|
+| **데이터 계층** | `model/`, `entity/` | `models/` |
+| **비즈니스 계층** | `service/`, `business/` | `services/` |
+| **유틸리티 계층** | `util/`, `helper/` | `utils/` |
+| **프레젠테이션** | `controller/`, `Main.java` | `main.py`, `views/` |
+
+### 실제 프로젝트 구조 예시
+
+```
+my_sample_app/
+├── src/
+│   └── myapp/
+│       ├── __init__.py          # 패키지 초기화
+│       ├── main.py              # 메인 실행 파일
+│       ├── models/              # 데이터 모델
+│       │   ├── __init__.py
+│       │   ├── user.py          # User 클래스
+│       │   └── product.py       # Product 클래스
+│       ├── services/            # 비즈니스 로직
+│       │   ├── __init__.py
+│       │   ├── user_service.py  # UserService 클래스
+│       │   └── product_service.py # ProductService 클래스
+│       └── utils/               # 유틸리티 함수
+│           ├── __init__.py
+│           └── helpers.py       # 공통 함수들
+├── tests/                       # 테스트 코드
+│   ├── __init__.py
+│   └── test_models.py
+├── requirements.txt             # 의존성 목록
+├── setup.py                     # 패키지 설치 설정
+└── README.md                    # 프로젝트 문서
+```
+
+### 패키지 구조의 핵심 요소
+
+#### 1. `__init__.py` 파일의 역할
+```python
+# myapp/__init__.py
+"""
+MyApp - 샘플 파이썬 애플리케이션
+"""
+
+__version__ = "1.0.0"
+__author__ = "Python Learner"
+
+# 패키지에서 자주 사용하는 클래스들을 직접 임포트
+from .models.user import User
+from .models.product import Product
+from .services.user_service import UserService
+from .services.product_service import ProductService
+
+# __all__ 변수로 공개할 모듈/클래스 정의
+__all__ = [
+    'User',
+    'Product', 
+    'UserService',
+    'ProductService'
+]
+```
+
+#### 2. 모델 계층 (models/)
+```python
+# models/user.py
+class User:
+    """사용자 정보를 나타내는 클래스"""
+    
+    def __init__(self, user_id, name, email, age=None):
+        self.user_id = user_id
+        self.name = name
+        self.email = email
+        self.age = age
+        self.created_at = datetime.now()
+        self.is_active = True
+    
+    def get_info(self):
+        """사용자 정보 반환"""
+        return {
+            'user_id': self.user_id,
+            'name': self.name,
+            'email': self.email,
+            'age': self.age,
+            'created_at': self.created_at.isoformat(),
+            'is_active': self.is_active
+        }
+```
+
+#### 3. 서비스 계층 (services/)
+```python
+# services/user_service.py
+class UserService:
+    """사용자 관련 서비스 클래스"""
+    
+    def __init__(self):
+        self.users = {}  # 메모리에 사용자 저장
+    
+    def create_user(self, user_id, name, email, age=None):
+        """새 사용자 생성"""
+        if user_id in self.users:
+            raise ValueError(f"사용자 ID '{user_id}'는 이미 존재합니다.")
+        
+        user = User(user_id, name, email, age)
+        self.users[user_id] = user
+        return user
+    
+    def get_user(self, user_id):
+        """사용자 조회"""
+        return self.users.get(user_id)
+```
+
+#### 4. 유틸리티 계층 (utils/)
+```python
+# utils/helpers.py
+def format_currency(amount, currency="KRW"):
+    """통화 형식으로 포맷팅"""
+    if currency == "KRW":
+        return f"{amount:,.0f}원"
+    elif currency == "USD":
+        return f"${amount:,.2f}"
+    else:
+        return f"{amount:,.2f} {currency}"
+
+def validate_email(email):
+    """이메일 주소 유효성 검증"""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+```
+
+### 패키지 사용 방법
+
+#### 1. 패키지에서 클래스 임포트
+```python
+# 방법 1: __init__.py에서 정의한 클래스 직접 임포트
+from myapp import User, Product, UserService, ProductService
+
+# 방법 2: 개별 모듈에서 임포트
+from myapp.models.user import User
+from myapp.services.user_service import UserService
+
+# 방법 3: 패키지 단위 임포트
+from myapp.models import user
+from myapp.services import user_service
+```
+
+#### 2. 서비스 사용 예제
+```python
+# 서비스 인스턴스 생성
+user_service = UserService()
+product_service = ProductService()
+
+# 사용자 생성
+user = user_service.create_user("user001", "김철수", "kim@example.com", 25)
+
+# 상품 생성
+product = product_service.create_product("prod001", "노트북", 1200000, "전자제품", 10)
+
+# 유틸리티 함수 사용
+from myapp.utils.helpers import format_currency
+formatted_price = format_currency(product.price)
+```
+
+### 프레임워크별 아키텍처 패턴
+
+#### Django 프로젝트
+```
+myproject/
+├── manage.py
+├── myproject/
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+└── apps/
+    ├── users/
+    │   ├── models.py
+    │   ├── views.py
+    │   └── urls.py
+    └── products/
+        ├── models.py
+        ├── views.py
+        └── urls.py
+```
+
+#### Flask 프로젝트
+```
+myapp/
+├── app.py
+├── models/
+│   ├── __init__.py
+│   └── user.py
+├── routes/
+│   ├── __init__.py
+│   └── auth.py
+├── services/
+│   ├── __init__.py
+│   └── user_service.py
+└── utils/
+    ├── __init__.py
+    └── helpers.py
+```
+
+#### FastAPI 프로젝트
+```
+myapi/
+├── main.py
+├── api/
+│   ├── __init__.py
+│   ├── deps.py
+│   └── v1/
+│       ├── __init__.py
+│       ├── users.py
+│       └── products.py
+├── core/
+│   ├── __init__.py
+│   ├── config.py
+│   └── security.py
+├── models/
+│   ├── __init__.py
+│   └── user.py
+└── services/
+    ├── __init__.py
+    └── user_service.py
+```
+
+### 패키지 설계 원칙
+
+#### 1. 단일 책임 원칙 (SRP)
+- 각 모듈은 하나의 책임만 가져야 함
+- `user.py`는 사용자 관련 기능만
+- `user_service.py`는 사용자 비즈니스 로직만
+
+#### 2. 의존성 역전 원칙 (DIP)
+- 상위 계층이 하위 계층에 의존
+- `services/`가 `models/`에 의존
+- `main.py`가 `services/`에 의존
+
+#### 3. 인터페이스 분리 원칙 (ISP)
+- 작고 집중된 인터페이스 제공
+- `__init__.py`에서 필요한 것만 공개
+
+### 개발 환경 설정
+
+#### 1. 가상환경 설정
+```bash
+# 가상환경 생성
+python3 -m venv venv
+
+# 가상환경 활성화
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate  # Windows
+
+# 의존성 설치
+pip install -r requirements.txt
+```
+
+#### 2. 개발 모드 설치
+```bash
+# 패키지를 개발 모드로 설치
+pip install -e .
+
+# 이제 어디서든 myapp 패키지 사용 가능
+python3 -c "from myapp import User"
+```
+
+## 9. 다음 학습 단계
 
 1. 예외 처리 (try-except)
 2. 파일 입출력
@@ -621,3 +975,5 @@ from ..parent_package import something
 - 임포트: 다양한 방법으로 모듈 사용
 - __init__.py: 패키지 초기화와 API 정의
 - pip: 외부 패키지 관리
+- 아키텍처: 계층형 구조로 코드 조직화
+- 설계 원칙: 단일 책임, 의존성 역전, 인터페이스 분리
