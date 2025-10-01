@@ -1,0 +1,130 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   Java Spring Boot vs Python 핵심 비교                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 프로젝트 구조
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Java Spring Boot                     Python Flask
+├── src/main/java/                   ├── app_flask.py (메인)
+│   └── com.myapp/                   ├── src/myapp/
+│       ├── Application.java         │   ├── __init__.py
+│       ├── controller/              │   ├── models/
+│       │   └── UserController.java  │   │   └── user.py
+│       ├── service/                 │   ├── services/
+│       │   └── UserService.java     │   │   └── user_service.py
+│       ├── repository/              │   └── utils/
+│       ├── model/                   │       └── helpers.py
+│       └── dto/                     └── requirements.txt
+└── application.yml
+
+
+🔄 요청 처리 흐름
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Java:
+Frontend → Controller (@RestController) → Service (@Service) 
+         → Repository (@Repository) → Entity (@Entity) → DB
+
+Python Flask:
+Frontend → @app.route() → Function → Service → Model → DB
+
+
+🎯 어노테이션 vs 데코레이터
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Java                                  Python Flask
+@RestController                       (클래스 대신 함수 사용)
+@RequestMapping("/api/v1/users")      @app.route('/api/v1/users')
+@GetMapping                           methods=['GET']
+@PostMapping                          methods=['POST']
+@PathVariable String id               <user_id> in route
+@RequestParam String name             request.args.get('name')
+@RequestBody UserDto dto              request.get_json()
+@Autowired UserService service        user_service = UserService()
+
+
+📝 코드 예시: 사용자 생성
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Java:
+    @PostMapping("/api/v1/users")
+    public ResponseEntity<User> createUser(@RequestBody UserDto dto) {
+        User user = userService.createUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+Python Flask:
+    @app.route('/api/v1/users', methods=['POST'])
+    def create_user():
+        data = request.get_json()
+        user = user_service.create_user(
+            user_id=data['user_id'],
+            name=data['name'],
+            email=data['email']
+        )
+        return jsonify({'user_id': user.user_id, ...}), 201
+
+
+🚀 실행 방법
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Java:
+    mvn spring-boot:run
+    또는
+    java -jar target/app.jar
+
+Python Flask:
+    python app_flask.py
+    또는
+    flask run
+
+
+🧪 API 테스트
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# 사용자 생성
+curl -X POST http://localhost:5000/api/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"user001","name":"김철수","email":"kim@example.com"}'
+
+# 모든 사용자 조회
+curl http://localhost:5000/api/v1/users
+
+# 특정 사용자 조회
+curl http://localhost:5000/api/v1/users/user001
+
+
+💡 핵심 차이점
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 타입 시스템
+   Java: 정적 타입 (컴파일 시 타입 체크)
+   Python: 동적 타입 (런타임 시 타입 결정)
+
+2. 의존성 주입
+   Java: @Autowired (Spring 컨테이너가 관리)
+   Python: 직접 인스턴스 생성
+
+3. 설정 방식
+   Java: application.yml / application.properties
+   Python: 코드 내에서 직접 설정
+
+4. 컴파일
+   Java: 컴파일 필요 (*.java → *.class)
+   Python: 인터프리터 실행 (바로 실행)
+
+5. 성능
+   Java: 더 빠름 (JIT 컴파일)
+   Python: 상대적으로 느림 (하지만 개발 속도는 빠름)
+
+
+📚 파일 목록
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app_flask.py              - Flask 웹 애플리케이션 (실행 가능)
+django_example.py         - Django 구조 설명 (참고용)
+JAVA_VS_PYTHON_WEB.md     - 상세 비교 문서
+FLASK_QUICKSTART.md       - Flask 빠른 시작 가이드
+QUICK_COMPARISON.txt      - 이 파일!
+
