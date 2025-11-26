@@ -596,9 +596,408 @@ bank_system()
 
 ---
 
+## 9. 실무 팁 및 자주 묻는 질문
+
+### 9.1 상속 vs 유틸리티 클래스 임포트
+
+#### 차이점 비교
+
+| 항목 | 상속 (Inheritance) | 유틸리티 클래스 임포트 (Import) |
+|------|-------------------|-------------------------------|
+| **관계** | is-a 관계 (Dog is an Animal) | 독립적 사용 또는 has-a 관계 |
+| **연결** | 부모-자식 클래스 관계 | 단순히 함수/클래스 가져오기 |
+| **목적** | 코드 확장과 다형성 | 코드 재사용 |
+| **사용 빈도** | ⭐⭐⭐ (보통) | ⭐⭐⭐⭐⭐ (매우 흔함) |
+| **실무 활용** | 프레임워크, 공통 기능 확장 | 일반적인 기능 재사용 |
+
+#### 상속 사용 예제
+
+```python
+# 상속: "Dog는 Animal이다" (is-a 관계)
+class Animal:
+    def make_sound(self):
+        return "일반적인 동물 소리"
+    
+    def move(self):
+        return "움직입니다"
+
+class Dog(Animal):  # ✅ 상속: Dog는 Animal이다
+    def make_sound(self):
+        return "멍멍!"  # 오버라이딩
+
+# 사용
+dog = Dog("멍멍이")
+print(dog.make_sound())  # "멍멍!" (Animal의 메서드 사용)
+print(dog.move())        # "움직입니다" (Animal의 메서드 사용)
+```
+
+#### 유틸리티 임포트 사용 예제
+
+```python
+# utils.py - 유틸리티 모듈
+def format_currency(amount):
+    return f"${amount:,.2f}"
+
+def validate_email(email):
+    import re
+    return bool(re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email))
+
+# main.py - 여러 곳에서 사용
+from utils import format_currency, validate_email
+
+class User:
+    def __init__(self, email, balance):
+        if validate_email(email):  # ✅ 유틸리티 사용
+            self.email = email
+        self.balance = balance
+    
+    def get_formatted_balance(self):
+        return format_currency(self.balance)  # ✅ 유틸리티 사용
+```
+
+#### 실무 권장 사항
+
+**✅ 유틸리티를 우선 사용:**
+- 일반적인 기능 (포맷팅, 검증, 계산 등)
+- 여러 클래스에서 재사용할 기능
+- 독립적인 기능
+
+**✅ 상속은 필요한 경우에만:**
+- 프레임워크가 상속을 요구할 때 (Django, Flask 등)
+- 공통 기능을 여러 클래스에 확장해야 할 때
+- 다형성이 필요한 경우
+
+### 9.2 언더스코어(`_`)와 접근 제어
+
+#### 언더스코어 갯수별 의미
+
+| 언더스코어 | 의미 | 접근 범위 | 예시 |
+|-----------|------|----------|------|
+| **없음** | Public (공개) | 어디서나 접근 가능 | `self.account_number` |
+| **`_` 1개** | Protected (보호) | 클래스 내부 + 하위 클래스 | `self._last_transaction` |
+| **`__` 2개** | Private (비공개) | 클래스 내부에서만 | `self.__balance` |
+
+#### 실제 사용 예제
+
+```python
+class BankAccount:
+    def __init__(self, account_number, initial_balance=0):
+        # Public (언더스코어 없음)
+        self.account_number = account_number
+        # → 어디서나 접근 가능
+        
+        # Protected (언더스코어 1개)
+        self._last_transaction = None
+        # → 클래스 내부와 하위 클래스에서 접근 가능
+        # → 외부에서도 접근 가능하지만 권장하지 않음
+        
+        # Private (언더스코어 2개)
+        self.__balance = initial_balance
+        # → 클래스 내부에서만 접근 가능
+        # → 외부에서 직접 접근 불가
+
+# 사용
+account = BankAccount("123456", 1000)
+
+# ✅ Public - 직접 접근 가능
+print(account.account_number)  # "123456" ✅
+
+# ⚠️ Protected - 접근 가능하지만 권장하지 않음
+print(account._last_transaction)  # None (작동하지만 피해야 함)
+
+# ❌ Private - 직접 접근 불가
+# print(account.__balance)  # AttributeError! ❌
+
+# ✅ Public 메서드를 통해서만 접근
+print(account.get_balance())  # 1000 ✅
+```
+
+#### 중요 사항
+
+- **순서와 무관:** 언더스코어 갯수로 결정됨 (선언 순서 무관)
+- **Java 비교:** `public`, `protected`, `private`와 유사한 개념
+- **key/value와 무관:** 접근 제어자일 뿐, 딕셔너리 key/value와는 다름
+
+### 9.3 연산자 우선순위
+
+#### Python 연산자
+
+| 연산자 | 의미 | 우선순위 |
+|--------|------|----------|
+| `**` | 거듭제곱 (제곱) | 높음 |
+| `*`, `/` | 곱하기, 나누기 | 중간 |
+| `+`, `-` | 더하기, 빼기 | 낮음 |
+
+#### 계산 순서 예제
+
+```python
+# 예제: 원의 면적 계산
+3.14159 * 4 ** 2
+# 계산 순서:
+# 1. 4 ** 2 = 16 (먼저 계산 - 제곱)
+# 2. 3.14159 * 16 = 50.27 (그 다음 계산 - 곱하기)
+
+# 공식: c * a ** b
+# = c * (a ** b)
+# 1. a ** b 먼저 계산
+# 2. c * (결과) 그 다음 계산
+```
+
+#### 실제 사용
+
+```python
+class Circle:
+    def area(self):
+        # 원의 면적 = π × 반지름²
+        return 3.14159 * self.radius ** 2
+        #                  ↑
+        #                  먼저 계산: self.radius ** 2
+        #                  그 다음: 3.14159 * (결과)
+
+circle = Circle(4)
+print(circle.area())  # 50.27
+```
+
+### 9.4 객체 생성과 인자 전달 플로우
+
+#### 단계별 설명
+
+```python
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+    
+    def area(self):
+        return self.width * self.height
+
+# 1단계: 객체 생성
+rect = Rectangle(5, 3)
+#        ↓
+# __init__(self, width=5, height=3) 실행
+#        ↓
+# self.width = 5 저장
+# self.height = 3 저장
+
+# 2단계: 메서드 호출
+result = rect.area()
+#        ↓
+# area(self=rect) 실행
+#        ↓
+# self.width = 5 (저장된 값 사용)
+# self.height = 3 (저장된 값 사용)
+#        ↓
+# return 5 * 3 = 15 반환
+```
+
+#### 인자 전달 과정
+
+```python
+# 호출
+account = BankAccount("12345", 1000)
+#                     ↑       ↑
+#                  계좌번호  초기 잔액
+
+# 내부 동작
+def __init__(self, account_number, initial_balance=0):
+    # account_number = "12345" (첫 번째 인자)
+    # initial_balance = 1000 (두 번째 인자)
+    
+    self.account_number = account_number
+    # → self.account_number = "12345" 저장
+    
+    self.__balance = initial_balance
+    # → self.__balance = 1000 저장
+```
+
+#### 매개변수 이름
+
+- **자유롭게 정할 수 있음:** `radius`, `r`, `param` 등 모두 가능
+- **의미 있는 이름 권장:** `radius` > `param` > `r`
+- **Java와 동일:** Java도 매개변수 이름을 자유롭게 정할 수 있음
+
+### 9.5 `raise` vs `return`
+
+#### 차이점
+
+| 항목 | `return` | `raise` |
+|------|----------|---------|
+| **의미** | 값을 반환하고 함수 종료 | 예외를 발생시키고 함수 종료 |
+| **결과** | 정상 종료 | 에러 발생 |
+| **호출자** | 반환값을 받음 | 예외를 처리해야 함 |
+| **Java 비교** | `return` | `throw` |
+
+#### 사용 예제
+
+```python
+# return - 값을 반환
+def add(a, b):
+    result = a + b
+    return result  # ✅ 값을 반환하고 정상 종료
+
+# raise - 예외 발생
+def divide(a, b):
+    if b == 0:
+        raise ValueError("0으로 나눌 수 없습니다!")  # ❌ 예외 발생
+    return a / b
+
+# 사용
+try:
+    result = divide(10, 0)  # 예외 발생
+except ValueError as e:  # 예외 처리
+    print(f"에러: {e}")  # "에러: 0으로 나눌 수 없습니다!"
+```
+
+#### `raise` → `except` 흐름
+
+```python
+def check_age(age):
+    if age < 0:
+        raise ValueError("나이는 0 이상이어야 합니다!")  # 예외 발생
+    return True
+
+try:
+    check_age(-5)  # 예외 발생
+    print("검증 통과!")  # 실행 안 됨
+except ValueError as e:  # 바로 여기로 점프!
+    print(f"검증 실패: {e}")  # 실행됨
+```
+
+### 9.6 오버라이딩 vs 오버로딩
+
+#### 비교표
+
+| 항목 | 오버라이딩 (Overriding) | 오버로딩 (Overloading) |
+|------|------------------------|------------------------|
+| **의미** | 덮어쓰기 | 중복 정의 |
+| **관계** | 상속 관계 (부모-자식) | 같은 클래스 내 |
+| **메서드 이름** | 같음 | 같음 |
+| **매개변수** | 같음 | 다름 (개수/타입) |
+| **Python 지원** | ✅ 지원 | ❌ 직접 지원 안 함 |
+| **Java 지원** | ✅ 지원 | ✅ 지원 |
+
+#### 오버라이딩 예제
+
+```python
+# 부모 클래스
+class Animal:
+    def make_sound(self):
+        return "일반적인 동물 소리"
+
+# 자식 클래스
+class Dog(Animal):
+    def make_sound(self):  # ✅ 오버라이딩 (덮어쓰기)
+        return "멍멍!"  # 부모 클래스의 make_sound()를 덮어씀
+
+# 사용
+animal = Animal()
+dog = Dog()
+
+print(animal.make_sound())  # "일반적인 동물 소리" ← 부모 클래스
+print(dog.make_sound())     # "멍멍!" ← 자식 클래스 (덮어쓴 것)
+```
+
+#### 오버로딩 (Python에서는 직접 지원 안 함)
+
+```python
+# Python은 오버로딩 직접 지원 안 함
+# 대신 기본값 인자나 *args 사용
+
+class Calculator:
+    def add(self, a, b, c=None):  # 기본값 인자 사용
+        if c is None:
+            return a + b  # 2개 인자
+        else:
+            return a + b + c  # 3개 인자
+
+calc = Calculator()
+print(calc.add(1, 2))      # 3 (2개 인자)
+print(calc.add(1, 2, 3))   # 6 (3개 인자)
+```
+
+### 9.7 객체 생성 시 인자 전달
+
+#### Java vs Python
+
+**Java:**
+```java
+Circle circle = new Circle(5);
+//        ↑      ↑   ↑      ↑
+//      변수   할당 new  클래스명
+//                  (5를 생성자로 전달)
+```
+
+**Python:**
+```python
+circle = Circle(5)
+#      ↑   ↑      ↑
+#    변수 할당 클래스명
+#            (5를 __init__로 전달)
+```
+
+#### 핵심 이해
+
+- `Circle`은 클래스 이름이지 인자가 아님
+- `5`만 인자로 전달되어 `radius` 매개변수로 받음
+- Java와 Python은 동일한 동작 (문법만 다름)
+
+### 9.8 다형성 이해하기
+
+#### 핵심 개념
+
+**다형성 = 같은 메서드 이름, 다른 동작**
+
+```python
+class Shape:
+    def area(self):
+        raise NotImplementedError()
+
+class Rectangle(Shape):
+    def area(self):
+        return self.width * self.height  # 사각형 계산
+
+class Circle(Shape):
+    def area(self):
+        return 3.14159 * self.radius ** 2  # 원 계산
+
+# 다형성 활용
+shapes = [
+    Rectangle(5, 3),   # shape[0]
+    Circle(4),         # shape[1]
+    Rectangle(2, 8)    # shape[2]
+]
+
+for shape in shapes:
+    # 같은 area() 메서드지만 다른 계산!
+    print(shape.area())
+    # 15.00 (Rectangle.area() 실행)
+    # 50.27 (Circle.area() 실행)
+    # 16.00 (Rectangle.area() 실행)
+```
+
+#### 데이터 흐름
+
+```
+1. Rectangle(5, 3) 호출
+   ↓
+2. __init__(self, width=5, height=3) 실행
+   ↓
+3. self.width = 5 저장
+   self.height = 3 저장
+   ↓
+4. rect.area() 호출
+   ↓
+5. area() 메서드에서 self.width(5)와 self.height(3) 사용
+   ↓
+6. return 5 * 3 = 15 반환
+```
+
+---
+
 **핵심 포인트**
 - 클래스: 객체의 청사진
 - 상속: 코드 재사용과 확장
 - 캡슐화: 데이터 보호와 인터페이스 제공
 - 다형성: 같은 인터페이스로 다른 동작
 - 특수 메서드: 연산자 오버로딩과 내장 함수 지원
+- 실무 팁: 유틸리티를 우선 사용, 상속은 필요한 경우에만
