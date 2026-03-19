@@ -11,6 +11,9 @@ pandas, numpy, scipy 는 pip install pandas numpy scipy 로 설치.
 """
 
 import os
+
+from pandas.core.common import P
+from scipy import stats
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(SCRIPT_DIR, "sample.csv")
 
@@ -107,34 +110,67 @@ cells = s.strip().split(",")
 print("cells = ", cells)
 
 # -----------------------------------------------------------------------------
-# 6단계: 파일 읽기 (open, readlines)
+# 6단계: 파일 읽기 (open, readlines) — 섹션별로 따라 치기
 # -----------------------------------------------------------------------------
 # [개념] f.readlines()=한 줄(행)씩 리스트. lines[0]=헤더, lines[1:]=데이터 행.
 
-# ---------- 따라 칠 코드 ----------
+# ---------- 6-1. 파일 열고 한 줄씩 읽기 ----------
+# 설명: with open(...) 으로 파일을 열고, readlines() 로 모든 줄을 리스트로 읽음. lines = [1줄, 2줄, ...]
 with open(CSV_PATH, "r", encoding="utf-8") as f:
     lines = f.readlines()
+
+with open(CSV_PATH, "r", encoding="utf-8") as f:
+    lines = f.readlines()
+
+# open은 인자를 여러개가질수있음, 경로 , 모드, 인코딩 은 3개의 인자 를 f에 변수로담음
+
+
+# ---------- 6-2. 헤더 / 데이터 행 나누기 ----------
+# 설명: 첫 줄(lines[0])은 헤더 → 쉼표로 잘라 header_list. 나머지(lines[1:])는 데이터 행 → 각 줄을 잘라 rows_list.
 header_list = lines[0].strip().split(",")
 rows_list = [line.strip().split(",") for line in lines[1:]]
+
+header_list = lines[0].strip().split(",")
+rows_list = [line.strip().split(",") for line in lines[1:]]
+
+# ---------- 6-3. 헤더·행 개수·컬럼 이름 출력 ----------
+# 설명: 헤더(컬럼 목록), 행 개수 출력. enumerate 로 "컬럼 0: 이름" 형태로 하나씩 출력.
 print("헤더(컬럼 목록):", header_list)
 print("행 개수:", len(rows_list))
-# 컬럼이 뭔지 하나씩 보고 싶으면:
-for i, col in enumerate(header_list):
+for i, col in enumerate[str](header_list):
     print(f"  컬럼 {i}: {col}")
 
-# ---------- N번째 "열(컬럼)" 에 있는 모든 데이터 가져오기 ----------
-# 시험에서는 컬럼 개수가 문제마다 다름. len(header_list) 로 총 컬럼 개수 확인.
+print("헤더", header_list)
+print("로우리스트", len(rows_list))
+for i, col in enumerate[str](header_list):
+    print(f"  컬럼 {i}: {col}")
+
+# 컬럼 가로행으로 enumerate 매서드로 n번째 + 값 출력
+
+# ---------- 6-4. N번째 열(컬럼) 전체 가져오기 ----------
+# 설명: 총 컬럼 개수 = len(header_list). n번째 열 → 인덱스 n-1. 그 열의 모든 값 = [row[col_idx] for row in rows_list]
 total_cols = len(header_list)
 print(f"  총 컬럼 개수 (header_list 길이): {total_cols}")
-# N번째 열 가져올 때: 문제에서 "몇 번째 열" 인지 정해지면 n 번째 → 인덱스는 n-1
 n_th = 3
 col_idx = n_th - 1
 if col_idx < total_cols:
     col_name = header_list[col_idx]
-    col_all_values = [row[col_idx] for row in rows_list]  # row 는 for 가 만듦: 각 행마다 row 에 그 행이 들어감
+    col_all_values = [row[col_idx] for row in rows_list]  # row = for 가 만듦
     print(f"  {n_th}번째 컬럼 이름: {col_name}, 그 열의 모든 데이터 (행 {len(col_all_values)}개): {col_all_values}")
 
-    # 그 열에 null(빈 값 등)이 있을 때 채우기 (표준편차 등 구할 때 보통 평균 대치 요구)
+# [선언 설명] 가로 행(헤더)에서 "몇 번째 열"까지 있는지 → 그 열 번호로 세로 열을 뽑을 때 씀
+total_cols = len(header_list)   # 헤더 한 줄의 셀 개수 = 컬럼(열) 총 개수 (가로 행의 길이)
+print(f" 헤더 총개수 : {total_cols}")
+n_th = 3                        # "몇 번째 열"을 볼지 (1부터 세는 번호). 예: 3 = 3번째 열
+col_index = n_th - 1            # 0부터 세는 인덱스. 3번째 열 → 인덱스 2. 가로 행에서의 "위치".
+
+if col_index < total_cols:      # col_index 로 row[col_index] 하면 → 모든 행에서 그 "위치"만 모음 = 세로 한 열
+    col_name = header_list[col_index]
+    col_all_values = [row[col_index] for row in rows_list]
+    print(f" {n_th}번째 컬럼이름: {col_name}, 그안의 데이터: {col_all_values} : 행{len(col_all_values)}개")
+
+    # ---------- 6-5. null 판별 함수 + null 아닌 값만 valid 로 ----------
+    # 설명: null 로 볼 문자열 집합(null_set). is_null(v)=함수 선언. valid = null 아닌 값만 모은 리스트.
     null_set = {"", "null", "NULL", "NA", "nan", "NaN"}
 
     def is_null(v):
@@ -148,7 +184,22 @@ if col_idx < total_cols:
                 numeric_vals.append(float(x))
             except ValueError:
                 pass
+
+    null_set = {"", "null", "NULL", "NA", "nan", "NaN"}
+    def is_null(v):
+        return v.strip() in null_set or v.strip() ==""
+
+    valid = [v for v in col_all_values if not is_null(v)]
+    if valid:
+        numeric_vals = []
+        for x in valid:
+            try:
+                numeric_vals.append(float(x))
+            except ValueError:
+                pass
         if numeric_vals:
+            # ---------- 6-6. null → 평균으로 채우기, col_filled (타입 float 통일) ----------
+            # 설명: valid 중 숫자로 변환 가능한 것만 numeric_vals. 평균 = fill_value. null이면 fill_value, 아니면 float(v) 로 col_filled 에 넣음.
             fill_value = sum(numeric_vals) / len(numeric_vals)
             col_filled = []
             for v in col_all_values:  # v = for 가 만드는 변수. 매 반복마다 col_all_values 의 다음 값이 v 에 들어감 (Java 의 for(String v : list) 와 같음)
@@ -188,6 +239,16 @@ x, y = get_two()
 print("x, y =", x, y)
 # ----------------------------------
 
+def add(a,b):
+    return a + b
+
+def get_two():
+    return 100, 200
+
+print(add(1,9))
+x, y = get_two()
+print("x , y =", x, y)
+
 # -----------------------------------------------------------------------------
 # 8단계: pandas DataFrame 기본
 # -----------------------------------------------------------------------------
@@ -222,6 +283,13 @@ for name, age in zip(names, ages):
     print(f"{name}: {age}세")
 # ----------------------------------
 
+names = ["김", "이", "박"]
+for i, n in enumerate(names):
+    print(i, n)
+ages = [20, 30, 40]
+for name, age in zip(names, ages):
+    print(f"{name}: {age}")
+
 # -----------------------------------------------------------------------------
 # 10단계: 딕셔너리, .get()
 # -----------------------------------------------------------------------------
@@ -232,6 +300,10 @@ for name, age in zip(names, ages):
 grade = {"A": 90, "B": 80, "C": 70}
 print(grade["A"], grade.get("B"), grade.get("D", 0))
 # ----------------------------------
+
+grade ={"a": 90, "b": 80, "c": 70}
+print(grade["a"], grade.get("b"), grade.get("x", 0))
+
 
 # -----------------------------------------------------------------------------
 # 11단계: try / except (예외 처리)
@@ -249,6 +321,15 @@ except FileNotFoundError:
 except Exception as e:
     print("오류:", e)
 # ----------------------------------
+
+try:
+    with open(CSV_PATH, "r", encoding="utf-8") as f:
+        n_lines = len(f.readlines())
+        print("파일 줄 수", n_lines)
+except FileNotFoundError:
+    print("파일 ㄴㄴ")
+except Exception as e:
+    print("오류", e")
 
 # -----------------------------------------------------------------------------
 # 12단계: pandas 결측치 확인·처리 (시험 1유형 단골)
@@ -268,6 +349,14 @@ try:
 except Exception as e:
     print("결측 예시 스킵:", e)
 # ----------------------------------
+try:
+    import pandas as pd
+    import numpy as np
+    df = pd.read_csv(CSV_PATH, encoding="utf-8")
+    print("결측치 \n", df.isnull().sum())
+    
+except Exception as e:
+    print("결측 예측 스킵 \n", e)
 
 # -----------------------------------------------------------------------------
 # 13단계: pandas value_counts, 조건 필터
@@ -290,6 +379,17 @@ except Exception as e:
     print("value_counts 예시 스킵:", e)
 # ----------------------------------
 
+try:
+    import pandas as pd
+    df = pd.read_csv(CSV_PATH, encoding="utf-8")
+    col0 = ef.columns[0]
+    print("value_counts:\n", df[col[0].value_counts()])
+    if len(df.columns) >= 2 and pd.api.types.is_numeric_dtype(df.iloc[: 1]):
+        filtered = df[df.iloc[: 1] >= 30]
+        print("조건 행 필터 수:",len(filtered))
+except Exception as e:
+    print("value_counts 예시스킵 :", e)
+
 # -----------------------------------------------------------------------------
 # 14단계: pandas 구간화 pd.cut (시험 1유형 단골)
 # -----------------------------------------------------------------------------
@@ -306,6 +406,16 @@ try:
 except Exception as e:
     print("pd.cut 스킵:", e)
 # ----------------------------------
+
+try:
+    import pandas as pd
+    import numpy as np
+    ages = pd.Series([22,33,55,66,77,23,99])
+    age_group = pd.cut(ages, bins=[20,30,40,50,200], right=False, labels=["20대","30대","40대","50대+"])
+    print("나이 -> 연령대 : \n", age_group.tolist())
+except Exception as e:
+    print("pd.cut 오류", e)
+
 
 # -----------------------------------------------------------------------------
 # 15단계: pandas groupby, agg (집계)
@@ -328,10 +438,33 @@ except Exception as e:
     print("groupby 예시 스킵:", e)
 # ----------------------------------
 
+try:
+    import pandas as pd
+    df = pd.read_csv(CSV_PATH, encoding="utf-8")
+    nummeric = df.select_dtypes(include="number")
+    if len(numeric.columns) >= 1 and len(df.columns) >= 1:
+        by_col = df.columns[0]
+        agg_col = numeric.columns[0]
+        grouped = df.groupby(by_col)[agg_col].agg(["mean", "count"])
+        print("groupby 집계:\n", grouped)
+except Exception as e:
+    print("groupby ERROR : ", e)
+
 # -----------------------------------------------------------------------------
 # 16단계: 가설 검정 — t검정, 카이제곱, p-value 해석 (시험 3유형 단골)
 # -----------------------------------------------------------------------------
-# [개념] t검정=두 집단 평균 차이 검정. 카이제곱=두 범주형 변수 연관성. p-value<0.05면 "유의함"(차이/연관 있음).
+# [쉬운 개념]
+# 1) 가설검정 = "우연히 그렇게 나왔을까? 아니면 진짜 차이/연관이 있을까?"를 숫자로 판단하는 것.
+# 2) p-value = "우연히 이만큼 차이(또는 연관)가 날 확률". 작을수록 "우연이 아니다" → 차이/연관이 있다고 봄.
+# 3) 0.05 = 5%. p < 0.05 이면 "유의하다" = 차이 있다(또는 연관 있다). p >= 0.05 이면 "유의하지 않다" = 없다고 봄.
+#
+# [t검정] 두 집단의 "평균"이 다른지 검정. 예: 직장인 소득 vs 자영업 소득 → 평균이 진짜 다른지?
+#   → stats.ttest_ind(그룹1배열, 그룹2배열) → (t통계량, p_value) 반환. p_value < 0.05 면 "평균 차이 있다".
+#
+# [카이제곱] 두 "범주형" 변수가 서로 연관 있는지 검정. 예: 신용등급 vs 대출승인 → 관련 있나?
+#   → 먼저 pd.crosstab(행범주, 열범주) 로 분할표(조합별 개수) 만들고, stats.chi2_contingency(분할표) 에 넣음.
+#   → chi2, p, dof, expected 반환. p < 0.05 면 "연관 있다".
+#
 # [메서드] stats.ttest_ind(그룹1, 그룹2) → (t통계량, p_value). chi2_contingency(분할표) → chi2, p, dof, expected.
 
 # ---------- 따라 칠 코드 ----------
@@ -355,5 +488,24 @@ try:
 except Exception as e:
     print("가설검정 스킵:", e)
 # ----------------------------------
+
+try:
+    from scipy import stats
+    import numpy as stats.np
+    group1 = stats.np.array([100, 102, 98, 105 97])
+    group2 = stats.np.array([108, 110, 106, 112, 104])
+    t_stat, p_value = stats.ttest_ind(group1, group2)
+    print(f"t검정: t={T_stat:.4f}, p-value={p_value:.4f}")
+    if p_value < 0.05:
+        print("결론: 유의수준 5%에서 두집단 평균에 차이가 있다")
+    else:
+        print("결론: 유의한 차이가없다")
+    
+    import pandas as pd
+    tab = pd.crosstab([1,1,0,0,1], [1,0,1,0,1])
+    chi2, p_chi, dof, expected = stats.shi2_contigency(tab)
+    print(f"카이제곱: chi2={chi2:.4f}, p-value={p_chi:.4f}")
+except Exception as e:
+    print("가설검증 오류")
 
 print("\n=== learn_concepts_by_typing (기초+심화) 끝 ===")
