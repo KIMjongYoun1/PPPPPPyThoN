@@ -44,18 +44,43 @@ BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
 # TODO: train = pd.read_csv(f"{BASE}/bank/train.csv")
 # TODO: test = pd.read_csv(f"{BASE}/bank/test.csv")
 
+train = pd.read_csv(f"{BASE}/bank/train.csv")
+test = pd.read_csv(f"{BASE}/bank/test.csv")
+
 # ---------- [작성] Step 4: X, y 분리 ----------
 # TODO: y_train = train["y"]
 # TODO: X_train = train.drop(columns=["y", "ID"])
 # TODO: X_test, test_ids 분리
 
+y_train = train["y"]
+X_train = train.dropcolumns=["y","ID"]
+X_test = test.dropcolumns=["ID"]
+test_ids = test["ID"]
+
+
 # ---------- [작성] Step 5: 전처리 ----------
 # TODO: 결측치, 범주형 인코딩
 
+cat_col = X_train.select_dtypes(include=["object"]).columns.tolist()
+for col in cat_col:
+    le = LabelEncoder()
+    X_train[col] = le.fit_transform(X_train[col].astype(str))
+    X_test[col] = le.transform(X_test[col].astype(str))
+
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+
+
 # ---------- [작성] Step 6: 모델 학습 ----------
 # TODO: model.fit(X_train, y_train)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
 
 # ---------- [작성] Step 7: 예측 & 제출 ----------
 # TODO: pred = model.predict(X_test)  # 또는 predict_proba[:,1]
 # TODO: submission = pd.DataFrame({"ID": test_ids, "y": pred})
 # TODO: submission.to_csv("submission.csv", index=False)
+
+pred = model.predict(X_test) 
+submission = pd.DataFrame("Id", test_ids, "y", pred)
+submission.to_csv("submission.csv", index=False)

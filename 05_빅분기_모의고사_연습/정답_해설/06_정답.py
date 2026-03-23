@@ -12,6 +12,7 @@ train = pd.read_csv(f"{BASE}/bank/train.csv")
 test = pd.read_csv(f"{BASE}/bank/test.csv")
 
 y_train = train["y"]
+print(y_train)
 X_train = train.drop(columns=["y", "ID"])
 X_test = test.drop(columns=["ID"])
 test_ids = test["ID"]
