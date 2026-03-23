@@ -24,7 +24,10 @@ y_train = y_train["target"]
 cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
 for col in cat_cols:
     le = LabelEncoder()
-    X_train[col] = le.fit_transform(X_train[col].astype(str))
+    # test에만 등장하는 범주 대비: train+test 합쳐서 fit
+    both = pd.concat([X_train[col], X_test[col]], axis=0).astype(str)
+    le.fit(both)
+    X_train[col] = le.transform(X_train[col].astype(str))
     X_test[col] = le.transform(X_test[col].astype(str))
 
 X_train = X_train.fillna(0)

@@ -16,8 +16,8 @@
 |------|------|
 | **[시험 환경] 요구사항** | 데이터 설명, 제공 파일, 평가 방식 (시험에서 주어지는 것) |
 | **[추출해야 할 내용 / 정답 형식]** | 정확히 어떤 값·형식으로 출력/제출해야 하는지 |
-| **[기본 제공] Step 1~3** | import, BASE URL, 데이터 로드 (시험에서 주어짐) |
-| **[작성] Step 4~7** | 전처리, 모델, 예측, 제출 (직접 작성) |
+| **[기본 제공] Step 1~2** | import, BASE URL (연습용 GitHub 경로 — 실기는 문제지 경로 따름) |
+| **[작성] Step 3~** | **데이터 로드(`read_csv`)** 포함 이후 전처리·모델·제출 (직접 작성) |
 
 ---
 
@@ -115,15 +115,15 @@
 
 | 유형 | 링크 | 내용 |
 |------|------|------|
-| **작업 1유형** | [typeone.html](https://www.datamanim.com/dataset/03_dataq/typeone.html) | 데이터셋별 Q1, Q2, Q3... **요구사항** + **정답 예시** (코드·출력값) |
+| **작업 1유형** | [typeone.html](https://www.datamanim.com/dataset/03_dataq/typeone.html) | DataManim 원본 문항·정답 예시 (참고용) |
 | **작업 2유형** | [typetwo.html](https://www.datamanim.com/dataset/03_dataq/typetwo.html) | 분류/회귀 **제출 형식** (예: CustomerId, Exited), y_test로 평가 |
 | **작업 3유형** | [typethree.html](https://www.datamanim.com/dataset/03_dataq/typethree.html) | F검정, t검정, 로지스틱/다중선형회귀 (statsmodels) |
 
-- **작업 1**: 각 문제마다 "인기동영상 제작횟수 상위 10개 채널", "일요일 가장 많은 categoryId" 등 **구체적 요구사항**과 **정답 코드·결과** 제공
+- **작업 1 (이 폴더 연습 스크립트)**: `05_youtube_집계.py`, `16_nba_농구.py`, `17_spotify_음악.py`, `18_weather_날씨.py`, `22_happy_행복지수.py` 등 **파일 상단 [수행 요구사항] + Step 4**에 **Q1~Qn·TODO**를 **스크립트 안에** 적어 두었음. 외부 페이지 없이 해당 `.py`만 열고 풀이하면 됨.
 - **작업 2**: 제출용 CSV 컬럼(예: `CustomerId`, `Exited`), 평가 지표(accuracy, F1, AUC 등) 명시
 - **y_test**: `{데이터셋}/y_test.csv` 또는 `test_label.csv`로 예측 정확도 확인 가능
 
-→ **풀기 전** DataManim 해당 페이지에서 요구사항·정답 형식 확인 후 여기서 코드 작성.
+→ **작업 1**은 우선 각 연습 `.py` 상단 요구사항을 따르고, 더 풀고 싶으면 DataManim typeone에서 추가 문항을 참고.
 
 ---
 

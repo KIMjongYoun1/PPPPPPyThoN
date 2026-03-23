@@ -1,32 +1,43 @@
 # ============================================================
 # 01. Admission 대학원 합격률 — 데이터 로드 연습
-# [유형] 2유형 (40점) — 모델링(회귀) / 로드 연습
+# [유형] 빅분기 실기 2유형(모델링) 준비 — CSV 읽기 연습 (연습: Datamanim admission)
 # ============================================================
 #
-# ---------- [시험 환경] ----------
-# 데이터: 대학원 합격률(Chance of Admit) 회귀 예측
-# 제공: train.csv, test.csv (BASE/admission/ 경로)
-# 평가(본 문제): RMSE 등 — 회귀 예측값 제출
+# ┌─ [문제 목표] ─────────────────────────────────────────────
+# │  ① train.csv를 읽어 **행·열 개수(shape)** 와 **앞부분(head)** 을 본다.
+# │  ② test.csv를 읽어 **shape** 를 출력한다.
+# │  (이후 본 풀이) 합격 가능성 **Chance of Admit** 을 숫자로 예측하는 회귀 문제로 확장 가능.
+# └──────────────────────────────────────────────────────────
 #
-# ---------- [요구사항] (이 파일에서 할 일) ----------
-# Q1. train.csv를 로드하고 shape와 head를 출력한다. (아래 Step 3 — 기본 제공)
-# Q2. test.csv를 로드하고 shape를 출력한다. (아래 Step 4 — 작성)
-# ※ 이후 단계(별도 연습): 전처리 → 회귀 모델 → submission (ID, Chance of Admit)
+# ┌─ [제공 데이터] ───────────────────────────────────────────
+# │  경로: BASE/admission/
+# │  ┌────────────┬──────────────────────────────────────────
+# │  │ 파일       │ 역할
+# │  ├────────────┼──────────────────────────────────────────
+# │  │ train.csv  │ 학습용 표 (정답 열 **Chance of Admit** 포함, ID류 열 있을 수 있음)
+# │  │ test.csv   │ 시험용 표 (보통 정답 열 없음 — 예측 대상)
+# │  └────────────┴──────────────────────────────────────────
+# └──────────────────────────────────────────────────────────
 #
-# ---------- [데이터 컬럼 참고] ----------
-# train: GRE Score, TOEFL Score, University Rating, SOP, LOR, CGPA, Research,
-#        Chance of Admit(종속), ID 또는 Serial No. 등 (DataManim 원본 확인)
-# test: 동일 특성 + Chance of Admit 없음(예측 대상)
+# ┌─ [수행 요구사항] ─────────────────────────────────────────
+# │  ① Step 3: train 로드 후 `shape`, `head` 출력 (직접 작성).
+# │  ② Step 4: test 로드 후 `shape` 출력 (직접 작성).
+# └──────────────────────────────────────────────────────────
 #
-# ---------- [추출해야 할 내용 / 정답 형식] ----------
-# (이번 파일) train shape, test shape 출력
-# (본 시험형 문제) submission.csv — ID, Chance of Admit (연속형 예측값)
+# ┌─ [산출물 / 정답 형식] ───────────────────────────────────
+# │  · 이번 파일: **콘솔에** train/test 크기와 train 앞줄이 보이면 됨.
+# │  · 본 시험형 확장 시: **submission.csv** — ID(또는 문제 지정 열), Chance of Admit(예측값).
+# └──────────────────────────────────────────────────────────
 #
-# ---------- [학습 목표] ----------
-# 나중에 주석 지우고 [기본 제공] + [요구사항]만 보고 연습
+# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
+# │  · 실기에서는 문제지에 적힌 **파일 경로·열 이름**을 그대로 따름.
+# │  · DataManim 원본 열 이름은 `read_csv` 후 `train.columns` 로 확인.
+# └──────────────────────────────────────────────────────────
+#
+# [학습 방법] import·BASE만 참고하고, **train/test 읽기(Step 3~4)** 를 직접 작성해 본다.
 # ============================================================
 #
-# [기본 제공] Step 1~3 | [작성] Step 4
+# [기본 제공] Step 1~2 | [작성] Step 3~4
 # ============================================================
 
 # ---------- [기본 제공] Step 1: import ----------
@@ -35,15 +46,11 @@ import pandas as pd
 # ---------- [기본 제공] Step 2: BASE URL ----------
 BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
 
-# ---------- [기본 제공] Step 3: train 로드 ----------
-train = pd.read_csv(f"{BASE}/admission/train.csv")
-print("train shape:", train.shape)
-print(train.head())
+# ---------- [작성] Step 3: train 로드 ----------
+# TODO: train = pd.read_csv(f"{BASE}/admission/train.csv")
+# TODO: print("train shape:", train.shape)
+# TODO: print(train.head())
 
 # ---------- [작성] Step 4: test 로드 ----------
 # TODO: test = pd.read_csv(f"{BASE}/admission/test.csv")
 # TODO: print("test shape:", test.shape)
-
-test = pd.read_csv(f"{BASE}/admission/test.csv")
-print("test shape:", test.shape)
-print(test.head())
