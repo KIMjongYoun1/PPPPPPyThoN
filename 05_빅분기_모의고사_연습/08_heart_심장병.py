@@ -37,6 +37,8 @@
 
 # ---------- [기본 제공] Step 1: import ----------
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
 
 # ---------- [기본 제공] Step 2: BASE URL ----------
 BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
@@ -47,15 +49,43 @@ BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
 # TODO: y_train = pd.read_csv(f"{BASE}/heart/y_train.csv")
 # TODO: y_test = pd.read_csv(f"{BASE}/heart/y_test.csv")
 
+X_train = pd.read_csv(f"{BASE}/heart/x_train.csv")
+X_test = pd.read_csv(f"{BASE}/heart/x_test.csv")
+y_train = pd.read_csv(f"{BASE}/heart/y_train.csv")
+y_test = pd.read_csv(f"{BASE}/heart/y_test.csv")
+
+
 # ---------- [작성] Step 4: ID 분리, X/y 정리 ----------
 # TODO: ID 컬럼 확인 후 분리, y_train = y_train["target"]
+
+id_col = "ID" if "ID" in X_test.columns else X_test.columns[0]
+test_ids = X_test[id_col]
+X_train = X_train.drop(columns=[id_col], errors="ignore")
+X_test = X_test.drop(columns=[id_col])
+y_train = y_train["target"]
 
 # ---------- [작성] Step 5: 전처리 ----------
 # TODO: 결측치, 범주형 인코딩
 
+cat_col = X_train.select_dtypes(include=["object"]).columns.tolist()
+for col in cat_col:
+    le = LabelEncoder()
+    X_train[col] = le.fit_transform(X_train[col].astype(str))
+    X_test[col] = le.transform(X_test[col].astype(str))
+
+X_train = X_train.fillna(0)
+X_test = X_test.fillna(0)
+
+
 # ---------- [작성] Step 6: 모델 학습 ----------
 # TODO: model.fit(X_train, y_train)
-
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
 # ---------- [작성] Step 7: 예측 & 제출 ----------
 # TODO: pred = model.predict(X_test)
 # TODO: submission.to_csv("submission.csv", index=False)
+pred = model.predict(X_test)
+submission = pd.DataFrame({"ID": test_ids, "target": pred})
+submission.to_csv("submission.csv", index=False)
+print("submission.csv 저장 완료")
+print("accuracy:", (pred == y_test["target"].values).mean())
