@@ -1,63 +1,62 @@
-# ============================================================
-# 21. Drug 약물 분류 (다중분류)
-# [유형] 빅분기 실기 2유형(모델링) — **여러 갈래** 맞추기 (연습: Datamanim drug)
-# ============================================================
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [2유형-분류] 21. Drug 약물 분류 (다중분류)                       ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ 바꿀 것: ① drug/  ② ID  ③ Drug (DrugA/B/C/X/Y 등 글자 라벨)
+# ★ ⚠️ 다중분류: 정답이 2개 이상 → y도 LabelEncoder 필요
 #
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  환자·검사 특성으로 **복용 약 종류(Drug)** 를 맞춘다. (정답이 **2개가 아닌 여러 글자/코드**)
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] (학습/시험 이미 분리) ─────────────────────
-# │  경로: BASE/drug/
-# │  ┌─────────────┬─────────────────────────────────────────
-# │  │ x_train.csv │ 학습 입력
-# │  │ y_train.csv │ **Drug**
-# │  │ x_test.csv  │ 시험 입력
-# │  │ y_test.csv  │ 연습용 정답
-# │  └─────────────┴─────────────────────────────────────────
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  ① ID 분리. ② 학습 시 정답을 **숫자로 인코딩**할 수 있음 → 제출 전 **다시 약 이름으로** 바꿀지 확인.
-# │  ③ `RandomForestClassifier` 등 **다중분류** 지원 모델 사용.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제출 산출물] ───────────────────────────────────────────
-# │  **submission.csv** — **ID**, **Drug** (문제가 요구하는 **글자 라벨** 형태)
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · `LabelEncoder` 로 y 인코딩 후 `inverse_transform` 으로 복원하는 패턴이 흔함.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **파일 읽기(Step 3)** 직접 작성 후 Step 4~7.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~7
-# ============================================================
+# [다중분류 y처리 암기]
+#   le_y = LabelEncoder()
+#   y_enc = le_y.fit_transform(y_train["Drug"])   ← 학습: 숫자로
+#   pred  = le_y.inverse_transform(pred_enc)       ← 제출: 글자로 복원
 
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
 
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# ═══ STEP ①: import
+# import pandas as pd
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.preprocessing import LabelEncoder
 
-# ---------- [작성] Step 3: x_train, x_test, y_train, y_test 로드 ----------
-# TODO: X_train = pd.read_csv(f"{BASE}/drug/x_train.csv")
-# TODO: X_test = pd.read_csv(f"{BASE}/drug/x_test.csv")
-# TODO: y_train = pd.read_csv(f"{BASE}/drug/y_train.csv")
-# TODO: y_test = pd.read_csv(f"{BASE}/drug/y_test.csv")
 
-# ---------- [작성] Step 4: ID 분리, X/y 정리 ----------
-# TODO: ID 컬럼 확인, y_train = y_train["Drug"]
+# ═══ STEP ②: 로드
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# X_train = pd.read_csv(f"{BASE}/drug/x_train.csv")
+# X_test  = pd.read_csv(f"{BASE}/drug/x_test.csv")
+# y_train = pd.read_csv(f"{BASE}/drug/y_train.csv")
+# y_test  = pd.read_csv(f"{BASE}/drug/y_test.csv")
 
-# ---------- [작성] Step 5: 전처리 ----------
-# TODO: 결측치, 범주형 인코딩 (다중분류 → LabelEncoder)
 
-# ---------- [작성] Step 6: 모델 학습 ----------
-# TODO: model.fit(X_train, y_train)  # 다중분류
+# ═══ STEP ③④: y·X 분리
+# id_col   = "ID" if "ID" in X_test.columns else X_test.columns[0]
+# test_ids = X_test[id_col]
+# X_train  = X_train.drop(columns=[id_col], errors="ignore")
+# X_test   = X_test.drop(columns=[id_col])
+# y_train  = y_train["Drug"]
 
-# ---------- [작성] Step 7: 예측 & 제출 ----------
-# TODO: pred = model.predict(X_test)
-# TODO: submission = pd.DataFrame({"ID": test_ids, "Drug": pred})
-# TODO: submission.to_csv("submission.csv", index=False)
+
+# ═══ STEP ⑤: X 인코딩 (범주형)
+# cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
+# for col in cat_cols:
+#     le   = LabelEncoder()
+#     comb = pd.concat([X_train[col], X_test[col]]).astype(str)
+#     le.fit(comb)
+#     X_train[col] = le.transform(X_train[col].astype(str))
+#     X_test[col]  = le.transform(X_test[col].astype(str))
+
+# y도 인코딩 (글자→숫자)
+# le_y      = LabelEncoder()
+# y_train_enc = le_y.fit_transform(y_train)
+
+
+# ═══ STEP ⑥: 결측치
+# X_train = X_train.fillna(0)
+# X_test  = X_test.fillna(0)
+
+
+# ═══ STEP ⑦: 학습+예측+제출
+# model = RandomForestClassifier(n_estimators=100, random_state=42)
+# model.fit(X_train, y_train_enc)
+# pred_enc = model.predict(X_test)
+# pred     = le_y.inverse_transform(pred_enc)   # 숫자 → 약 이름 복원
+
+# submission = pd.DataFrame({"ID": test_ids, "Drug": pred})
+# submission.to_csv("submission.csv", index=False)
+# print("accuracy:", (pred == y_test["Drug"].values).mean())

@@ -1,86 +1,49 @@
-# ============================================================
-# 06. Bank 은행 마케팅 (정기예금 가입 예측)
-# [유형] 빅분기 실기 2유형(모델링) — 갈래 맞추기·분류 (연습: Datamanim bank)
-# ============================================================
-#
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  고객 정보로 **정기예금 가입 여부**를 맞춘다. 정답 열 이름: **y** (0/1).
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] ───────────────────────────────────────────
-# │  경로: BASE/bank/
-# │  ┌────────────┬──────────────────────────────────────────
-# │  │ train.csv  │ 특성 + **y** + **ID**
-# │  │ test.csv   │ 특성 + **ID** (정답 없음)
-# │  └────────────┴──────────────────────────────────────────
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  ① **ID** 는 제출용으로만 두고 X에서는 제거.
-# │  ② **y** 는 정답만 분리. 글자 열 인코딩·결측 처리 후 **분류** 모델.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제출 산출물] ───────────────────────────────────────────
-# │  **submission.csv** — 열: **ID**, **y** (0/1 또는 확률 — 문제 지시 따름)
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · accuracy / F1 / AUC 등은 **문제지** 확인. y_test 있으면 연습용 비교 가능.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **파일 읽기(Step 3)** 직접 작성 후 Step 4~7.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~7
-# ============================================================
-
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
-
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
-
-# ---------- [작성] Step 3: train, test 로드 ----------
-# TODO: train = pd.read_csv(f"{BASE}/bank/train.csv")
-# TODO: test = pd.read_csv(f"{BASE}/bank/test.csv")
-
-train = pd.read_csv(f"{BASE}/bank/train.csv")
-test = pd.read_csv(f"{BASE}/bank/test.csv")
-
-# ---------- [작성] Step 4: X, y 분리 ----------
-# TODO: y_train = train["y"]
-# TODO: X_train = train.drop(columns=["y", "ID"])
-# TODO: X_test, test_ids 분리
-
-y_train = train["y"]
-X_train = train.dropcolumns=["y","ID"]
-X_test = test.dropcolumns=["ID"]
-test_ids = test["ID"]
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [2유형-분류] 06. Bank 은행 마케팅 (정기예금 가입 예측)            ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ 바꿀 것: ① bank/  ② ID  ③ y (0/1)
+# ★ train/test 분리형 | 범주형 있음
 
 
-# ---------- [작성] Step 5: 전처리 ----------
-# TODO: 결측치, 범주형 인코딩
-
-cat_col = X_train.select_dtypes(include=["object"]).columns.tolist()
-for col in cat_col:
-    le = LabelEncoder()
-    X_train[col] = le.fit_transform(X_train[col].astype(str))
-    X_test[col] = le.transform(X_test[col].astype(str))
-
-X_train = X_train.fillna(0)
-X_test = X_test.fillna(0)
+# ═══ STEP ①: import
+# import pandas as pd
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.preprocessing import LabelEncoder
 
 
-# ---------- [작성] Step 6: 모델 학습 ----------
-# TODO: model.fit(X_train, y_train)
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+# ═══ STEP ②: 로드
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# train = pd.read_csv(f"{BASE}/bank/train.csv")
+# test  = pd.read_csv(f"{BASE}/bank/test.csv")
 
-# ---------- [작성] Step 7: 예측 & 제출 ----------
-# TODO: pred = model.predict(X_test)  # 또는 predict_proba[:,1]
-# TODO: submission = pd.DataFrame({"ID": test_ids, "y": pred})
-# TODO: submission.to_csv("submission.csv", index=False)
 
-pred = model.predict(X_test) 
-submission = pd.DataFrame("Id", test_ids, "y", pred)
-submission.to_csv("submission.csv", index=False)
+# ═══ STEP ③④: y·X 분리
+# y_train  = train["y"]
+# X_train  = train.drop(columns=["y", "ID"])
+# X_test   = test.drop(columns=["ID"])
+# test_ids = test["ID"]
+
+
+# ═══ STEP ⑤: 인코딩
+# cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
+# for col in cat_cols:
+#     le   = LabelEncoder()
+#     comb = pd.concat([X_train[col], X_test[col]]).astype(str)
+#     le.fit(comb)
+#     X_train[col] = le.transform(X_train[col].astype(str))
+#     X_test[col]  = le.transform(X_test[col].astype(str))
+
+
+# ═══ STEP ⑥: 결측치
+# X_train = X_train.fillna(0)
+# X_test  = X_test.fillna(0)
+
+
+# ═══ STEP ⑦: 학습+예측+제출
+# model = RandomForestClassifier(n_estimators=100, random_state=42)
+# model.fit(X_train, y_train)
+# pred = model.predict(X_test)
+
+# submission = pd.DataFrame({"ID": test_ids, "y": pred})
+# submission.to_csv("submission.csv", index=False)
+# print(submission.head())

@@ -1,51 +1,79 @@
-# ============================================================
-# 19. WorldCup 월드컵 (집계·전처리)
-# [유형] 빅분기 실기 1유형 — 표 다루기·집계 (연습: Datamanim worldcup)
-# ============================================================
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [1유형-집계] 19. WorldCup 월드컵 Q21~Q30                      ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ 열: Player, Goals, Years, Country
+# ★ Years 처리 핵심: str.split("-") → 리스트 길이 = 출전 횟수
 #
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  월드컵 골 기록 **한 표**로 Q21~Q30: 나라별 골, 출전 횟수, 문자 필터 등 **집계·전처리**로 답한다.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] ───────────────────────────────────────────
-# │  경로: BASE/worldcup/worldcupgoals.csv
-# │  · 열 예: Player, Goals, Years, Country
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] (문항 요약) ─────────────────────────────
-# │  · Q21: **나라별 골 합** 상위 5개 국가+득점
-# │  · Q22: **골 넣은 선수 수**가 많은 나라 상위 5 + 선수 수
-# │  · Q23: **Years** 가 4자리 아닌 행 **개수**
-# │  · Q24: Q23 제외한 표의 **행 수**
-# │  · Q25: **출전 횟수(LenCup)** 열 추가 후 **4회 출전** 선수 수
-# │  · Q26: **Yugoslavia** 이고 **2회 출전** 선수 수
-# │  · Q27: **2002년** 출전 선수 수
-# │  · Q28: 이름에 **carlos** 포함(대소문자 무시) 선수 수
-# │  · Q29: **출전 1회** 선수 중 **최다 득점** 선수 이름(값)
-# │  · Q30: 출전 1회 선수가 **가장 많은 국가**
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [산출물 / 정답 형식] ───────────────────────────────────
-# │  · 문항별 **DataFrame / 숫자 / 문자** 등 지시대로 출력.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **데이터 로드(Step 3)** 직접 작성 후 Q21~Q30.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~4
-# ============================================================
+# [문자열 처리 암기]
+#   str.split("구분자")  → 리스트로 분리
+#   str.len()           → 리스트 길이 (출전 횟수)
+#   str.contains("문자", case=False) → 포함 여부 (대소문자 무시)
+#   str.lower()         → 소문자 변환
 
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
 
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# ═══ import + 로드
+# import pandas as pd
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# df = pd.read_csv(f"{BASE}/worldcup/worldcupgoals.csv")
 
-# ---------- [작성] Step 3: 데이터 로드 ----------
-# TODO: df = pd.read_csv(f"{BASE}/worldcup/worldcupgoals.csv")
 
-# ---------- [작성] Step 4: Q21~Q30 작성 ----------
-# TODO: Q21 — df.groupby("Country")["Goals"].sum().nlargest(5)
-# TODO: Q22 — 골득점 한 선수 수 by Country
-# TODO: Q23 — Years.str.len() != 4 또는 정규식
-# TODO: Q24~Q30 — 요구사항에 맞게 작성
+# ═══ 전처리: Years 유효성 검사 (4자리 연도만 유효)
+# df["yearLst"] = df.Years.str.split("-")
+# def checkFour(x):
+#     for value in x:
+#         if len(str(value)) != 4:
+#             return False
+#     return True
+# df["check"] = df["yearLst"].apply(checkFour)
+
+
+# ═══ Q21: 나라별 골 합 상위 5
+# q21 = df.groupby("Country").sum().sort_values("Goals", ascending=False).head(5)
+# print("Q21:", q21)
+
+
+# ═══ Q22: 골 넣은 선수 가장 많은 나라 상위 5
+# q22 = df.groupby("Country").size().sort_values(ascending=False).head(5)
+# print("Q22:", q22)
+
+
+# ═══ Q23: Years 4자리 아닌 케이스 수
+# q23 = len(df[df.check == False])
+# print("Q23:", q23)
+
+
+# ═══ Q24: 유효한 행(4자리만) 수
+# df2 = df[df.check == True].reset_index(drop=True)
+# q24 = df2.shape[0]
+# print("Q24:", q24)
+
+
+# ═══ Q25: LenCup(출전횟수) 추가 후 4회 출전 선수 수
+# df2["LenCup"] = df2["yearLst"].str.len()
+# q25 = df2["LenCup"].value_counts()[4]
+# print("Q25:", q25)
+
+
+# ═══ Q26: Yugoslavia 2회 출전 선수 수
+# q26 = len(df2[(df2.LenCup == 2) & (df2.Country == "Yugoslavia")])
+# print("Q26:", q26)
+
+
+# ═══ Q27: 2002년 출전 선수 수
+# q27 = len(df2[df2.Years.str.contains("2002")])
+# print("Q27:", q27)
+
+
+# ═══ Q28: 이름에 'carlos' 포함 선수 수 (대소문자 무시)
+# q28 = len(df2[df2.Player.str.lower().str.contains("carlos")])
+# print("Q28:", q28)
+
+
+# ═══ Q29: 출전 1회 선수 중 최다 득점 선수
+# q29 = df2[df2.LenCup == 1].sort_values("Goals", ascending=False).Player.values[0]
+# print("Q29:", q29)
+
+
+# ═══ Q30: 출전 1회 선수 가장 많은 국가
+# q30 = df2[df2.LenCup == 1].Country.value_counts().index[0]
+# print("Q30:", q30)

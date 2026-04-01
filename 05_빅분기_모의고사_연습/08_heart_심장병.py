@@ -1,91 +1,52 @@
-# ============================================================
-# 08. Heart 심장병 (분류)
-# [유형] 빅분기 실기 2유형(모델링) — 갈래 맞추기 (연습: Datamanim heart)
-# ============================================================
-#
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  심장 관련 지표로 **질병 유무**를 맞춘다. 정답 열 이름: **target** (0/1).
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] (학습/시험 이미 분리) ─────────────────────
-# │  경로: BASE/heart/
-# │  ┌─────────────┬─────────────────────────────────────────
-# │  │ x_train.csv │ 학습 입력 (+ ID류)
-# │  │ y_train.csv │ **target**
-# │  │ x_test.csv  │ 시험 입력
-# │  │ y_test.csv  │ 연습용 정답
-# │  └─────────────┴─────────────────────────────────────────
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  ① ID 열 분리 → 제출용. ② `y_train["target"]`. ③ 전처리 후 **분류** 모델.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제출 산출물] ───────────────────────────────────────────
-# │  **submission.csv** — **ID**, **target**
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · 지표·확률 제출 여부는 문제지 확인.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **파일 읽기(Step 3)** 직접 작성 후 Step 4~7.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~7
-# ============================================================
-
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import LabelEncoder
-
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
-
-# ---------- [작성] Step 3: X_train, X_test, y_train, y_test 로드 ----------
-# TODO: X_train = pd.read_csv(f"{BASE}/heart/x_train.csv")
-# TODO: X_test = pd.read_csv(f"{BASE}/heart/x_test.csv")
-# TODO: y_train = pd.read_csv(f"{BASE}/heart/y_train.csv")
-# TODO: y_test = pd.read_csv(f"{BASE}/heart/y_test.csv")
-
-X_train = pd.read_csv(f"{BASE}/heart/x_train.csv")
-X_test = pd.read_csv(f"{BASE}/heart/x_test.csv")
-y_train = pd.read_csv(f"{BASE}/heart/y_train.csv")
-y_test = pd.read_csv(f"{BASE}/heart/y_test.csv")
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [2유형-분류] 08. Heart 심장병 예측                             ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ 바꿀 것: ① heart/  ② ID  ③ target (0/1)
+# ★ X/y 분리형 | 범주형 있음
 
 
-# ---------- [작성] Step 4: ID 분리, X/y 정리 ----------
-# TODO: ID 컬럼 확인 후 분리, y_train = y_train["target"]
-
-id_col = "ID" if "ID" in X_test.columns else X_test.columns[0]
-test_ids = X_test[id_col]
-X_train = X_train.drop(columns=[id_col], errors="ignore")
-X_test = X_test.drop(columns=[id_col])
-y_train = y_train["target"]
-
-# ---------- [작성] Step 5: 전처리 ----------
-# TODO: 결측치, 범주형 인코딩
-
-cat_col = X_train.select_dtypes(include=["object"]).columns.tolist()
-for col in cat_col:
-    le = LabelEncoder()
-    X_train[col] = le.fit_transform(X_train[col].astype(str))
-    X_test[col] = le.transform(X_test[col].astype(str))
-
-X_train = X_train.fillna(0)
-X_test = X_test.fillna(0)
+# ═══ STEP ①: import
+# import pandas as pd
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.preprocessing import LabelEncoder
 
 
-# ---------- [작성] Step 6: 모델 학습 ----------
-# TODO: model.fit(X_train, y_train)
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-# ---------- [작성] Step 7: 예측 & 제출 ----------
-# TODO: pred = model.predict(X_test)
-# TODO: submission.to_csv("submission.csv", index=False)
-pred = model.predict(X_test)
-submission = pd.DataFrame({"ID": test_ids, "target": pred})
-submission.to_csv("submission.csv", index=False)
-print("submission.csv 저장 완료")
-print("accuracy:", (pred == y_test["target"].values).mean())
+# ═══ STEP ②: 로드
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# X_train = pd.read_csv(f"{BASE}/heart/x_train.csv")
+# X_test  = pd.read_csv(f"{BASE}/heart/x_test.csv")
+# y_train = pd.read_csv(f"{BASE}/heart/y_train.csv")
+# y_test  = pd.read_csv(f"{BASE}/heart/y_test.csv")
+
+
+# ═══ STEP ③④: y·X 분리
+# id_col   = "ID" if "ID" in X_test.columns else X_test.columns[0]
+# test_ids = X_test[id_col]
+# X_train  = X_train.drop(columns=[id_col], errors="ignore")
+# X_test   = X_test.drop(columns=[id_col])
+# y_train  = y_train["target"]
+
+
+# ═══ STEP ⑤: 인코딩
+# cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
+# for col in cat_cols:
+#     le   = LabelEncoder()
+#     comb = pd.concat([X_train[col], X_test[col]]).astype(str)
+#     le.fit(comb)
+#     X_train[col] = le.transform(X_train[col].astype(str))
+#     X_test[col]  = le.transform(X_test[col].astype(str))
+
+
+# ═══ STEP ⑥: 결측치
+# X_train = X_train.fillna(0)
+# X_test  = X_test.fillna(0)
+
+
+# ═══ STEP ⑦: 학습+예측+제출
+# model = RandomForestClassifier(n_estimators=100, random_state=42)
+# model.fit(X_train, y_train)
+# pred = model.predict(X_test)
+
+# submission = pd.DataFrame({"ID": test_ids, "target": pred})
+# submission.to_csv("submission.csv", index=False)
+# print("accuracy:", (pred == y_test["target"].values).mean())

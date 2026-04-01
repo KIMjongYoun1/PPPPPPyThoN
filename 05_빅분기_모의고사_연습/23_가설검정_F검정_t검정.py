@@ -1,66 +1,46 @@
-# ============================================================
-# 23. 가설검정 (F검정, t검정)
-# [유형] 빅분기 실기 3유형 — 통계·가설검정 (연습: krdatacertificate s1)
-# ============================================================
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [3유형-통계] 23. 가설검정 (F검정, 합동분산, t검정)               ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ sklearn 아님 → numpy / scipy.stats 사용
+# ★ 결과: round(값, 3) 출력 (소수 셋째 자리)
 #
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  두 집단(**Classification** 1 vs 2)의 **Resistin** 을 **로그 변환**한 뒤,
-# │  분산 비교(F) · 합동분산 · **독립표본 t검정 p-value** 를 **숫자로** 제출한다.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] ───────────────────────────────────────────
-# │  경로: BASE/krdatacertificate/s1.csv
-# │  · 열: **Classification**, **Resistin**
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  ① 집단별로 Resistin 분리 후 `np.log` (문제 지시: 로그 후 검정).
-# │  ② Q1-1: **F 통계량** — 표본분산(ddof=1), **큰 분산/작은 분산** 으로 F (문제 조건 따름).
-# │  ③ Q1-2: **합동 분산** 공식으로 추정값 계산.
-# │  ④ Q1-3: `scipy.stats.ttest_ind` 로 **p-value**.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [산출물 / 정답 형식] ───────────────────────────────────
-# │  · 각 문항 **round(값, 3)** — 소수 **셋째 자리**까지 (콘솔 출력 또는 답안지 형식).
-# │  · **sklearn 아님** — `numpy` / `scipy.stats` 사용.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · 실기 3유형은 **statsmodels / scipy** 문항이 많음.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE 참고. **s1.csv 읽기(Step 3)** 직접 작성.
-#            Step 4는 집단 분리·로그 예시로 제공. Step 5~7 통계량은 직접 작성.
-# ============================================================
-#
-# [기본 제공] Step 1~2, 4 | [작성] Step 3, 5~7
-# ============================================================
+# [3유형 핵심 암기]
+#   F검정:   큰분산 / 작은분산  (ddof=1 표본분산)
+#   합동분산: ((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2)
+#   t검정:   scipy.stats.ttest_ind(그룹1, 그룹2) → (t통계량, p값)
+#   로그변환: np.log(값)  ← 단위 정규화 목적
 
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
-import numpy as np
-from scipy import stats
 
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# ═══ import + 로드
+# import pandas as pd
+# import numpy as np
+# from scipy import stats
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# df = pd.read_csv(f"{BASE}/krdatacertificate/s1.csv")
 
-# ---------- [작성] Step 3: 데이터 로드 ----------
-# TODO: df = pd.read_csv(f"{BASE}/krdatacertificate/s1.csv")
 
-# ---------- [기본 제공] Step 4: 두 집단 분리 & 로그 변환 ----------
-cls_1 = df[df["Classification"] == 1]["Resistin"]
-cls_2 = df[df["Classification"] == 2]["Resistin"]
-cls_1_log = np.log(cls_1)
-cls_2_log = np.log(cls_2)
+# ═══ 집단 분리 + 로그 변환
+# cls_1 = df[df["Classification"] == 1]["Resistin"]
+# cls_2 = df[df["Classification"] == 2]["Resistin"]
+# cls_1_log = np.log(cls_1)
+# cls_2_log = np.log(cls_2)
 
-# ---------- [작성] Step 5: Q1-1 F검정 통계량 ----------
-# TODO: 분산 계산 (ddof=1), 분자>분모 조건으로 F = 큰분산/작은분산
-# TODO: print("Q1-1:", round(f_stat, 3))
 
-# ---------- [작성] Step 6: Q1-2 합동 분산 ----------
-# TODO: var_pooled = ((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2)
-# TODO: print("Q1-2:", round(var_pooled, 3))
+# ═══ Q1-1: F검정 통계량 (큰 분산 / 작은 분산)
+# ddof=1 → 표본분산 (시험에서는 항상 ddof=1)
+# cls_1_var = np.var(cls_1_log, ddof=1)
+# cls_2_var = np.var(cls_2_log, ddof=1)
+# f_stat = cls_1_var / cls_2_var if cls_1_var > cls_2_var else cls_2_var / cls_1_var
+# print("Q1-1:", round(f_stat, 3))
 
-# ---------- [작성] Step 7: Q1-3 t검정 p-value ----------
-# TODO: t_stat, p_value = stats.ttest_ind(cls_1_log, cls_2_log)
-# TODO: print("Q1-3:", round(p_value, 3))
+
+# ═══ Q1-2: 합동 분산 (pooled variance)
+# n1, n2 = len(cls_1), len(cls_2)
+# var_pooled = ((n1 - 1) * cls_1_var + (n2 - 1) * cls_2_var) / (n1 + n2 - 2)
+# print("Q1-2:", round(var_pooled, 3))
+
+
+# ═══ Q1-3: 독립표본 t검정 p-value
+# ttest_ind → (t통계량, p값) 반환 → p값만 씀
+# t_stat, p_value = stats.ttest_ind(cls_1_log, cls_2_log)
+# print("Q1-3:", round(p_value, 3))

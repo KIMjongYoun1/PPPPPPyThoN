@@ -1,66 +1,74 @@
-# ============================================================
-# 16. NBA 농구 (집계·전처리)
-# [유형] 빅분기 실기 1유형 — 표 다루기·집계 (연습: Datamanim nba)
-# ============================================================
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [1유형-집계] 16. NBA 농구 통계 Q1~Q10                         ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ ⚠️ 구분자 sep=";" + 인코딩 encoding="latin-1" → read_csv에 명시
 #
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  NBA 선수 통계 **한 표**로 질문마다 **팀·포지션별 집계, 순위, 개수** 등을 구한다.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] ───────────────────────────────────────────
-# │  경로: BASE/nba/nba.csv
-# │  · 구분자 **세미콜론(;)** , 인코딩 **latin-1** (`read_csv` 옵션 주의)
-# │  · 열(헤더): Rk, Player, Pos, Age, Tm, G, GS, MP, FG, FGA, FG%, 3P, 3PA, 3P%, 2P, 2PA, 2P%,
-# │    eFG%, FT, FTA, FT%, ORB, DRB, TRB, AST, STL, BLK, TOV, PF, PTS
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  · Q1~Q10: `groupby`, `agg`, `sort_values`, `value_counts`, `nlargest` 등으로 풀이.
-# │  · Q1: 팀(**Tm**)별 평균 **PTS** 상위 **5**팀 (Series 또는 DataFrame)
-# │  · Q2: 포지션(**Pos**)별 **선수(행) 수** — 많은 순 정렬
-# │  · Q3: **PTS** 기준 상위 **10명**의 **Player**와 **PTS** (열 2개만 또는 행 10개)
-# │  · Q4: 팀(**Tm**)별 선수 **Age** 평균이 **가장 높은** 팀명 **하나**
-# │  · Q5: **MP**(출장 분) **30 이상**인 선수 **명수**
-# │  · Q6: 팀(**Tm**)별 **AST** 합계가 **가장 큰** 팀명
-# │  · Q7: **STL** 평균이 **가장 높은** 선수 **5명**의 **Player** (동률이면 정렬 규칙은 임의)
-# │  · Q8: **G**(출전 경기 수) **80 이상**인 선수만 대상으로 **PTS** 평균 (스칼라)
-# │  · Q9: **eFG%**가 **0.55 이상**인 선수 **명수** (문자열이면 숫자 변환 후 비교)
-# │  · Q10: 각 팀(**Tm**)에서 **PTS가 최대**인 선수 **1명씩** (팀 × Player, transform 또는 groupby+idxmax)
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [산출물 / 정답 형식] ───────────────────────────────────
-# │  · 문항별로 **표·숫자·이름 한 줄** 등 지시 형태로 **print** 또는 변수에 담아 확인.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · `read_csv` 실패 시 **sep=";", encoding="latin-1"** 재확인.
-# │  · 퍼센트 열(FG%, eFG% 등)이 문자열이면 `str.rstrip('%')` 후 `astype(float)/100` 등 처리.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **read_csv(Step 3)** 직접 작성 후 Step 4.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~4
-# ============================================================
+# [1유형 핵심 패턴]
+#   그룹집계: groupby("열")["열"].mean/sum() → sort_values → head(N)
+#   행 개수:  groupby().size() / .value_counts()
+#   최대팀:   groupby().mean/sum().idxmax()
+#   상위N명:  .nlargest(N, "열") / sort_values().head(N)
+#   필터:     df[df["열"] >= 값] / df.loc[조건, "열"]
 
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
 
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# ═══ import + 로드
+# import pandas as pd
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# df = pd.read_csv(f"{BASE}/nba/nba.csv", encoding="latin-1", sep=";")
 
-# ---------- [작성] Step 3: 데이터 로드 ----------
-# TODO: df = pd.read_csv(f"{BASE}/nba/nba.csv", encoding="latin-1", sep=";")
 
-# ---------- [작성] Step 4: Q1~Q10 (요구사항은 이 파일 상단 [수행 요구사항]과 동일) ----------
-#
-# TODO: Q1 — groupby("Tm")["PTS"].mean().sort_values(ascending=False).head(5)
-# TODO: Q2 — groupby("Pos").size() 또는 value_counts()
-# TODO: Q3 — nlargest(10, "PTS")[["Player", "PTS"]]
-# TODO: Q4 — groupby("Tm")["Age"].mean().idxmax() (또는 sort_values 후 iloc[0])
-# TODO: Q5 — (df["MP"] >= 30).sum()
-# TODO: Q6 — groupby("Tm")["AST"].sum().idxmax()
-# TODO: Q7 — groupby("Player")["STL"].mean().sort_values(ascending=False).head(5) (선수당 1행이면 mean=값)
-# TODO: Q8 — df.loc[df["G"] >= 80, "PTS"].mean()
-# TODO: Q9 — eFG% 숫자화 후 (>= 0.55).sum()
-# TODO: Q10 — df.loc[df.groupby("Tm")["PTS"].idxmax()] 등으로 팀당 최고 득점자 한 행씩
+# ═══ Q1: 팀별 평균 PTS 상위 5팀
+# groupby("Tm")["PTS"].mean() → sort_values(False) → head(5)
+# q1 = df.groupby("Tm")["PTS"].mean().sort_values(ascending=False).head(5)
+# print("Q1:", q1)
+
+
+# ═══ Q2: 포지션별 선수 수 (많은 순)
+# groupby().size() = 그룹별 행 개수
+# q2 = df.groupby("Pos").size().sort_values(ascending=False)
+# print("Q2:", q2)
+
+
+# ═══ Q3: PTS 상위 10명 Player와 PTS
+# .nlargest(N, "열") → 빠르게 상위N 추출
+# q3 = df.nlargest(10, "PTS")[["Player", "PTS"]]
+# print("Q3:", q3)
+
+
+# ═══ Q4: 팀별 Age 평균 가장 높은 팀명
+# groupby().mean().idxmax() → 최대값의 인덱스(=팀명) 반환
+# q4 = df.groupby("Tm")["Age"].mean().idxmax()
+# print("Q4:", q4)
+
+
+# ═══ Q5: MP >= 30 선수 명수
+# (조건).sum() = True 개수
+# q5 = (df["MP"] >= 30).sum()
+# print("Q5:", q5)
+
+
+# ═══ Q6: 팀별 AST 합 최대 팀명
+# q6 = df.groupby("Tm")["AST"].sum().idxmax()
+# print("Q6:", q6)
+
+
+# ═══ Q7: STL 평균 상위 5명
+# q7 = df.groupby("Player")["STL"].mean().nlargest(5).index.tolist()
+# print("Q7:", q7)
+
+
+# ═══ Q8: G >= 80인 선수만 PTS 평균
+# 조건 필터 먼저 → 집계
+# q8 = df.loc[df["G"] >= 80, "PTS"].mean()
+# print("Q8:", q8)
+
+
+# ═══ Q9: eFG% >= 0.55 선수 수
+# q9 = (df["eFG%"] >= 0.55).sum()
+# print("Q9:", q9)
+
+
+# ═══ Q10: 각 팀에서 PTS 최대 선수 1명씩
+# groupby().idxmax() → 인덱스 목록 → df.loc[...]
+# q10 = df.loc[df.groupby("Tm")["PTS"].idxmax()][["Tm", "Player", "PTS"]]
+# print("Q10:", q10)

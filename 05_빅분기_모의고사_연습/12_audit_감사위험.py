@@ -1,61 +1,52 @@
-# ============================================================
-# 12. Audit 감사 위험 (분류)
-# [유형] 빅분기 실기 2유형(모델링) — 갈래 맞추기 (연습: Datamanim audit)
-# ============================================================
-#
-# ┌─ [문제 목표] ─────────────────────────────────────────────
-# │  회계·지표 특성으로 **감사 위험(Risk)** 유무를 맞춘다.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제공 데이터] (학습/시험 이미 분리) ─────────────────────
-# │  경로: BASE/audit/
-# │  ┌─────────────┬─────────────────────────────────────────
-# │  │ x_train.csv │ 학습 입력
-# │  │ y_train.csv │ **Risk**
-# │  │ x_test.csv  │ 시험 입력
-# │  │ y_test.csv  │ 연습용 정답
-# │  └─────────────┴─────────────────────────────────────────
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [수행 요구사항] ─────────────────────────────────────────
-# │  ① ID 분리. ② `y_train["Risk"]`. ③ 범주형·결측 처리. ④ 분류 모델.
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [제출 산출물] ───────────────────────────────────────────
-# │  **submission.csv** — **ID**, **Risk**
-# └──────────────────────────────────────────────────────────
-#
-# ┌─ [평가·연습 시 참고] ─────────────────────────────────────
-# │  · y_test로 정확도 확인 가능.
-# └──────────────────────────────────────────────────────────
-#
-# [학습 방법] import·BASE만 참고하고, **파일 읽기(Step 3)** 직접 작성 후 Step 4~7.
-# ============================================================
-#
-# [기본 제공] Step 1~2 | [작성] Step 3~7
-# ============================================================
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  [2유형-분류] 12. Audit 감사 위험 예측                           ║
+# ╚══════════════════════════════════════════════════════════════╝
+# ★ 바꿀 것: ① audit/  ② ID  ③ Risk (0/1)
+# ★ X/y 분리형 | 범주형 있음
 
-# ---------- [기본 제공] Step 1: import ----------
-import pandas as pd
 
-# ---------- [기본 제공] Step 2: BASE URL ----------
-BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# ═══ STEP ①: import
+# import pandas as pd
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.preprocessing import LabelEncoder
 
-# ---------- [작성] Step 3: X_train, X_test, y_train, y_test 로드 ----------
-# TODO: X_train = pd.read_csv(f"{BASE}/audit/x_train.csv")
-# TODO: X_test = pd.read_csv(f"{BASE}/audit/x_test.csv")
-# TODO: y_train = pd.read_csv(f"{BASE}/audit/y_train.csv")
-# TODO: y_test = pd.read_csv(f"{BASE}/audit/y_test.csv")
 
-# ---------- [작성] Step 4: ID 분리, X/y 정리 ----------
-# TODO: ID 컬럼 확인 후 분리, y_train = y_train["Risk"]
+# ═══ STEP ②: 로드
+# BASE = "https://raw.githubusercontent.com/Datamanim/datarepo/main"
+# X_train = pd.read_csv(f"{BASE}/audit/x_train.csv")
+# X_test  = pd.read_csv(f"{BASE}/audit/x_test.csv")
+# y_train = pd.read_csv(f"{BASE}/audit/y_train.csv")
+# y_test  = pd.read_csv(f"{BASE}/audit/y_test.csv")
 
-# ---------- [작성] Step 5: 전처리 ----------
-# TODO: 결측치, 범주형 인코딩
 
-# ---------- [작성] Step 6: 모델 학습 ----------
-# TODO: model.fit(X_train, y_train)
+# ═══ STEP ③④: y·X 분리
+# id_col   = "ID" if "ID" in X_test.columns else X_test.columns[0]
+# test_ids = X_test[id_col]
+# X_train  = X_train.drop(columns=[id_col], errors="ignore")
+# X_test   = X_test.drop(columns=[id_col])
+# y_train  = y_train["Risk"]
 
-# ---------- [작성] Step 7: 예측 & 제출 ----------
-# TODO: pred = model.predict(X_test)
-# TODO: submission.to_csv("submission.csv", index=False)
+
+# ═══ STEP ⑤: 인코딩
+# cat_cols = X_train.select_dtypes(include=["object"]).columns.tolist()
+# for col in cat_cols:
+#     le   = LabelEncoder()
+#     comb = pd.concat([X_train[col], X_test[col]]).astype(str)
+#     le.fit(comb)
+#     X_train[col] = le.transform(X_train[col].astype(str))
+#     X_test[col]  = le.transform(X_test[col].astype(str))
+
+
+# ═══ STEP ⑥: 결측치
+# X_train = X_train.fillna(0)
+# X_test  = X_test.fillna(0)
+
+
+# ═══ STEP ⑦: 학습+예측+제출
+# model = RandomForestClassifier(n_estimators=100, random_state=42)
+# model.fit(X_train, y_train)
+# pred = model.predict(X_test)
+
+# submission = pd.DataFrame({"ID": test_ids, "Risk": pred})
+# submission.to_csv("submission.csv", index=False)
+# print("accuracy:", (pred == y_test["Risk"].values).mean())
