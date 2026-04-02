@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① HRdata/  ② enrollee_id  ③ target (0=잔류 1=이직)
 # ★ ⚠️ X/y 파일 분리형: X_train.csv + y_train.csv + X_test.csv 따로 로드
+#   ※ 지문 판단법: "이직 여부를 예측하시오" → 이직함/안함, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier
 #
 # [X/y 분리형 vs train/test 분리형]
 #   train/test 분리형: train 안에 정답열 있음 → train["정답열"]로 꺼냄

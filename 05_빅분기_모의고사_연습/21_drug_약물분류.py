@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① drug/  ② ID  ③ Drug (DrugA/B/C/X/Y 등 글자 라벨)
 # ★ ⚠️ 다중분류: 정답이 2개 이상 → y도 LabelEncoder 필요
+#   ※ 지문 판단법: "약물 종류를 예측하시오" → DrugA/B/C 등 글자 라벨 3개 이상 → 분류(다중)
+#                  import: RandomForestClassifier + LabelEncoder (X도, y도 인코딩)
 #
 # [다중분류 y처리 암기]
 #   le_y = LabelEncoder()

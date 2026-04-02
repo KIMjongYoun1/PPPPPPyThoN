@@ -4,6 +4,8 @@
 # ★ 바꿀 것: ① redwine/  ② ID  ③ quality (연속값)
 # ★ X/y 분리형 | 수치형만 → 인코딩 불필요
 # ★ 성능지표: RMSE = np.sqrt(mean_squared_error(실제, 예측))
+#   ※ 지문 판단법: "와인 품질을 예측하시오" → 품질 점수(소수 연속값) → 회귀
+#                  import: RandomForestRegressor
 
 
 # ═══ STEP ①: import

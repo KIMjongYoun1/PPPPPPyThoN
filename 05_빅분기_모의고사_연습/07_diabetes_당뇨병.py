@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① diabetes/  ② ID (없으면 첫번째 열)  ③ Outcome (0/1)
 # ★ X/y 분리형 | 수치형만 → 인코딩 불필요
+#   ※ 지문 판단법: "당뇨 여부를 예측하시오" → 당뇨/정상, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier
 #
 # [ID열 자동감지 패턴 암기]
 #   id_col = "ID" if "ID" in X_test.columns else X_test.columns[0]

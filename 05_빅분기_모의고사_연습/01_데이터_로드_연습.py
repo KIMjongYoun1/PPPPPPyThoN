@@ -10,7 +10,8 @@
 # [분류 vs 회귀 구분]
 #   정답이 0/1, 예/아니오, 글자 라벨  →  분류 (RandomForestClassifier)
 #   정답이 가격, 점수, 확률 등 연속값  →  회귀 (RandomForestRegressor)
-#   ※ 이 문제: 합격가능성(0.0~1.0 실수)  →  회귀 선택
+#   ※ 지문 판단법: "합격 가능성을 예측하시오" → 0.0~1.0 소수 연속값 → 회귀
+#                  import: RandomForestRegressor
 #
 # [7단계 뼈대 — 무조건 암기, 어떤 문제도 이 구조]
 #   ① import   : pandas + sklearn 라이브러리 3줄

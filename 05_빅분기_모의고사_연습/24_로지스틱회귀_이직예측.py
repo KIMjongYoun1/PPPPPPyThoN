@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ sklearn 아님 → statsmodels.formula.api.logit 사용
 # ★ 결과: round(값, 3) 출력
+#   ※ 지문 판단법: "로지스틱 회귀", "오즈비를 구하시오", "유의한 변수" → 3유형
+#                  import: statsmodels.formula.api (sklearn 절대 아님!)
 #
 # [3유형 로지스틱 회귀 암기]
 #   logit("y ~ x1 + x2", data=df).fit()  ← formula 형식

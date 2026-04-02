@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ sklearn 아님 → statsmodels.formula.api.ols 사용
 # ★ 결과: round(값, 3) 출력
+#   ※ 지문 판단법: "다중선형회귀", "회귀계수를 구하시오", "R²(결정계수)" → 3유형
+#                  import: statsmodels.formula.api (sklearn 절대 아님!)
 #
 # [3유형 OLS 선형회귀 암기]
 #   ols("y ~ c1 + c2 + c3", data=df).fit()  ← formula 형식

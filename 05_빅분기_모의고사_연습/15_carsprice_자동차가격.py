@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① carsprice/  ② ID  ③ price (연속값)
 # ★ ⚠️ 파일명 대문자 X_train.csv / X_test.csv (소문자 x 아님!)
+#   ※ 지문 판단법: "자동차 가격을 예측하시오" → 금액(소수 연속값) → 회귀
+#                  import: RandomForestRegressor
 
 
 # ═══ STEP ①: import

@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① cancer/  ② ID  ③ diagnosis (M=악성/B=양성)
 # ★ ⚠️ y가 글자(M/B) → LabelEncoder로 숫자 변환 후 학습, 제출도 숫자
+#   ※ 지문 판단법: "악성/양성을 예측하시오" → M/B 글자 라벨, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier + LabelEncoder (y가 글자라 y도 인코딩)
 #
 # [y 글자→숫자 암기]
 #   le_y = LabelEncoder()

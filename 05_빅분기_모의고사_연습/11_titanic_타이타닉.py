@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ ⚠️ train.csv만 제공 → train_test_split으로 직접 나눔
 # ★ 정답열: Survived / ID열: PassengerId
+#   ※ 지문 판단법: "생존 여부를 예측하시오" → 생존/사망, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier + train_test_split (test 파일 없을 때)
 #
 # [train만 있을 때 패턴]
 #   X, y 분리 → train_test_split → X_tr/X_val/y_tr/y_val

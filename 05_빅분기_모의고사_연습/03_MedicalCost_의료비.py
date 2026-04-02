@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① MedicalCost/  ② ID없음→index사용  ③ charges (연속값)
 # ★ ⚠️ ID열 없는 경우: test_ids = X_test.index  (행 번호를 ID로)
+#   ※ 지문 판단법: "의료비를 예측하시오" → 금액(소수 연속값) → 회귀
+#                  import: RandomForestRegressor
 #
 # [ID 없는 경우 암기] test_ids = X_test.index → DataFrame({"ID": test_ids, ...})
 

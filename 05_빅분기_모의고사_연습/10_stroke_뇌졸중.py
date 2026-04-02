@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① stroke_/ (밑줄!)  ② id (소문자!)  ③ stroke (0/1)
 # ★ ⚠️ 폴더명 stroke_ / ID열 소문자 id — 대소문자 틀리면 FileNotFoundError
+#   ※ 지문 판단법: "뇌졸중 여부를 예측하시오" → 발생/정상, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier
 
 
 # ═══ STEP ①: import

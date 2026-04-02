@@ -3,6 +3,9 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ ⚠️ 열 이름에 공백 있음: "top genre", "year released" → df["top genre"]
 # ★ 날짜처리: pd.to_datetime(df["added"], errors="coerce") → .dt.year
+#   ※ 지문 판단법: "Q1. ~를 구하시오" 형태로 질문 여러 개 나열 → 1유형
+#                  "예측하시오" 없음, submission 제출 없음 → print()로 출력
+#                  import: pandas만
 
 
 # ═══ import + 로드

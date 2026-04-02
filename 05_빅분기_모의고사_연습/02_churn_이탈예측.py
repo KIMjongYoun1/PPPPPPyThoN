@@ -3,6 +3,8 @@
 # ╚══════════════════════════════════════════════════════════════╝
 # ★ 바꿀 것: ① churn/  ② CustomerId  ③ Exited (0=잔류 1=이탈)
 # ★ 분류 = RandomForestClassifier | predict() → 0 또는 1
+#   ※ 지문 판단법: "이탈 여부를 예측하시오" → 이탈함/안함, 둘 중 하나 → 분류
+#                  import: RandomForestClassifier
 #
 # [7단계 뼈대] import → 로드 → y분리 → X분리 → 인코딩 → 결측 → 학습+제출
 # [train/test 분리형] train에 정답열 포함 → y꺼내기 → drop으로 X만들기

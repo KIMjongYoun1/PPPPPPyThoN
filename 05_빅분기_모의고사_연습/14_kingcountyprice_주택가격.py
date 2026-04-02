@@ -4,6 +4,8 @@
 # ★ 바꿀 것: ① kingcountyprice/  ② ID  ③ price (연속값)
 # ★ X/y 분리형 | 범주형 있을 수 있음
 # ★ RMSE 빠른계산: (pd.Series(pred - y_test.values) ** 2).mean() ** 0.5
+#   ※ 지문 판단법: "주택 가격을 예측하시오" → 금액(소수 연속값) → 회귀
+#                  import: RandomForestRegressor
 
 
 # ═══ STEP ①: import
